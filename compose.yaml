@@ -3,7 +3,7 @@ services:
     container_name: meme_api_database
     image: mysql:latest
     environment:
-      MYSQL_DATABASE: memes
+      MYSQL_DATABASE: meme_db
       MYSQL_ROOT_PASSWORD: root
     ports:
       - 3306:3306
