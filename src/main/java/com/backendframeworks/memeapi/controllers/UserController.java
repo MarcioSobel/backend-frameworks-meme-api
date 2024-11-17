@@ -1,16 +1,16 @@
 package com.backendframeworks.memeapi.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.backendframeworks.memeapi.dtos.users.CreateUserDto;
 import com.backendframeworks.memeapi.models.User;
-import com.backendframeworks.memeapi.services.users.CreateUserUseCase;
+import com.backendframeworks.memeapi.repositories.UserRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,13 +20,11 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController {
 
 	@Autowired
-	private CreateUserUseCase createUserUseCase;
+	private UserRepository userRepository;
 
-	@PostMapping
-	public ResponseEntity<User> createUser(@RequestBody CreateUserDto userDto) throws RuntimeException {
-		log.info("Chamando o caso de uso de criação do usuário...");
-		User user = createUserUseCase.execute(userDto);
-		log.info("Usuário criado com sucesso.");
-		return ResponseEntity.status(HttpStatus.CREATED).body(user);
+	@GetMapping
+	public ResponseEntity<List<User>> createUser() {
+		List<User> users = userRepository.findAll();
+		return ResponseEntity.status(HttpStatus.OK).body(users);
 	}
 }
