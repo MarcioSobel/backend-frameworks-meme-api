@@ -11,6 +11,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.backendframeworks.memeapi.exceptions.Unauthorized;
 import com.backendframeworks.memeapi.models.User;
 
 @Service
@@ -42,7 +43,7 @@ public class TokenService {
 					.verify(token)
 					.getSubject();
 		} catch (JWTVerificationException e) {
-			throw new RuntimeException(e);
+			throw new Unauthorized("Invalid token!");
 		}
 	}
 
