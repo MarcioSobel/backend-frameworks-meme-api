@@ -8,6 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -26,15 +28,23 @@ public class Comment {
 	private String comment;
 
 	@Column(nullable = false)
-	private Instant postedAt;
+	private Instant createdAt;
 
 	@Column(nullable = true)
 	private Instant updatedAt;
 
+	@ManyToOne
+	@JoinColumn(name = "meme_id", nullable = false)
+	private Meme meme;
+
+	@ManyToOne
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
+
 	@PrePersist
 	private void onCreate() {
 		Instant now = Instant.now();
-		postedAt = now;
+		createdAt = now;
 	}
 
 	@PreUpdate
