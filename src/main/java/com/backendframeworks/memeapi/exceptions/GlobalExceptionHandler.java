@@ -13,4 +13,10 @@ public class GlobalExceptionHandler {
 		HttpError httpError = new HttpError(HttpStatus.CONFLICT, exception.getMessage());
 		return ResponseEntity.status(httpError.getStatus()).body(httpError);
 	}
+
+	@ExceptionHandler(Unauthorized.class)
+	public ResponseEntity<HttpError> handleUnauthorizedException(Unauthorized exception) {
+		HttpError httpError = new HttpError(HttpStatus.UNAUTHORIZED, exception.getMessage());
+		return ResponseEntity.status(httpError.getStatus()).body(httpError);
+	}
 }

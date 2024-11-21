@@ -33,7 +33,7 @@ public class TokenService {
 		}
 	}
 
-	public String validateToken(String token) {
+	public String validateToken(String token) throws Unauthorized {
 		try {
 			Algorithm algorithm = Algorithm.HMAC256(secret);
 

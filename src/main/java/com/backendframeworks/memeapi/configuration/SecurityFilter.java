@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.backendframeworks.memeapi.exceptions.Unauthorized;
 import com.backendframeworks.memeapi.repositories.UserRepository;
 import com.backendframeworks.memeapi.services.auth.TokenService;
 
@@ -45,11 +46,15 @@ public class SecurityFilter extends OncePerRequestFilter {
 		String token = readToken(request);
 
 		if (token != null) {
-			String email = tokenService.validateToken(token);
-			UserDetails user = userRepository.findByEmail(email);
+			try {
+				String email = tokenService.validateToken(token);
+				UserDetails user = userRepository.findByEmail(email);
 
-			var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-			SecurityContextHolder.getContext().setAuthentication(authentication);
+				var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+			} catch (Unauthorized e) {
+				handleInvalidTokenException(response, e);
+			}
 		}
 
 		filterChain.doFilter(request, response);
@@ -61,5 +66,11 @@ public class SecurityFilter extends OncePerRequestFilter {
 			return null;
 		}
 		return authHeader.replace("Bearer ", "");
+	}
+
+	private void handleInvalidTokenException(HttpServletResponse response, Unauthorized e) throws IOException {
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		response.getWriter().write(e.getMessage());
+		response.getWriter().flush();
 	}
 }
