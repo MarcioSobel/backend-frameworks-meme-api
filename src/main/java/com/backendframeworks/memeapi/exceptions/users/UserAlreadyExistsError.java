@@ -4,6 +4,6 @@ import com.backendframeworks.memeapi.exceptions.Conflict;
 
 public class UserAlreadyExistsError extends Conflict {
 	public UserAlreadyExistsError() {
-		super("User already exists!");
+		super("User already exists");
 	}
 }
