@@ -4,9 +4,9 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.backendframeworks.memeapi.models.UserHasPage;
+import com.backendframeworks.memeapi.models.UserFollowPage;
 
-public interface UserHasPageRepository extends JpaRepository<UserHasPage, Long> {
+public interface UserFollowPageRepository extends JpaRepository<UserFollowPage, Long> {
 
 	public void deleteByPageId(UUID pageId);
 
