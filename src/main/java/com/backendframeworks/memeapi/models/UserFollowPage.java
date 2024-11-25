@@ -11,7 +11,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "user_likes_meme")
+@Table(name = "user_follows_page")
 public class UserFollowPage {
 
 	@Id
