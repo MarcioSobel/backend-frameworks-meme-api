@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.backendframeworks.memeapi.exceptions.pages.PageNotFound;
 import com.backendframeworks.memeapi.exceptions.users.UserNotFoundError;
@@ -19,7 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class FollowPageUseCase {
+@Transactional
+public class UnfollowPageUseCase {
 
 	@Autowired
 	private UserRepository userRepository;
@@ -46,19 +48,15 @@ public class FollowPageUseCase {
 			throw new PageNotFound();
 		}
 
-		log.info("Check if user already follows page");
-		Optional<UserFollowPage> userAlreadyFollowPage = userFollowPageRepository.findByUserIdAndPageId(userId, pageId);
-		if (userAlreadyFollowPage.isPresent()) {
-			log.info("User already follows page, no action needed.");
+		log.info("Page is valid");
+		log.info("Checking if user follows page");
+		Optional<UserFollowPage> userFollowPage = userFollowPageRepository.findByUserIdAndPageId(userId, pageId);
+		if (userFollowPage.isEmpty()) {
+			log.info("User does not follow this page, no action needed.");
 			return;
 		}
 
-		log.info("Page is valid");
-		log.info("Creating relation");
-		UserFollowPage userFollowPage = new UserFollowPage();
-		userFollowPage.setPage(page.get());
-		userFollowPage.setUser(user.get());
-
-		userFollowPageRepository.save(userFollowPage);
+		log.info("Deleting relation");
+		userFollowPageRepository.deleteByUserIdAndPageId(userId, pageId);
 	}
 }

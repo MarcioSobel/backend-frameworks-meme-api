@@ -26,6 +26,7 @@ import com.backendframeworks.memeapi.services.pages.FollowPageUseCase;
 import com.backendframeworks.memeapi.services.pages.ListAllPagesUseCase;
 import com.backendframeworks.memeapi.services.pages.ListPagesFollowedByUserUseCase;
 import com.backendframeworks.memeapi.services.pages.RemovePageUseCase;
+import com.backendframeworks.memeapi.services.pages.UnfollowPageUseCase;
 import com.backendframeworks.memeapi.services.pages.UpdatePageUseCase;
 
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +56,9 @@ public class PageController {
 
 	@Autowired
 	private FollowPageUseCase followPageUseCase;
+
+	@Autowired
+	private UnfollowPageUseCase unfollowPageUseCase;
 
 	@PostMapping
 	public ResponseEntity<Page> createPage(@RequestBody CreatePageDto dto) {
@@ -114,6 +118,25 @@ public class PageController {
 		User user = tokenService.getUserByToken(token);
 
 		followPageUseCase.execute(user.getId(), pageId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+	@DeleteMapping("/unfollow/{pageId}")
+	public ResponseEntity<Object> unfollowPageByToken(@RequestHeader("Authorization") String token,
+			@PathVariable UUID pageId) {
+		log.info("Unfollowing page by token");
+		User user = tokenService.getUserByToken(token);
+
+		unfollowPageUseCase.execute(user.getId(), pageId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+	@DeleteMapping("/unfollow/{pageId}/{userId}")
+	public ResponseEntity<Object> unfollowPageByToken(@PathVariable UUID userId,
+			@PathVariable UUID pageId) {
+		log.info("Unfollowing page");
+
+		unfollowPageUseCase.execute(userId, pageId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }
