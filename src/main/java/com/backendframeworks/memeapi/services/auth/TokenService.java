@@ -3,8 +3,11 @@ package com.backendframeworks.memeapi.services.auth;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
@@ -12,13 +15,18 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.backendframeworks.memeapi.exceptions.Unauthorized;
+import com.backendframeworks.memeapi.exceptions.users.UserNotFoundError;
 import com.backendframeworks.memeapi.models.User;
+import com.backendframeworks.memeapi.repositories.UserRepository;
 
 @Service
 public class TokenService {
 
 	@Value("${api.security.token.secret}")
 	private String secret;
+
+	@Autowired
+	private UserRepository userRepository;
 
 	public String generateToken(User user) {
 		try {
@@ -47,7 +55,21 @@ public class TokenService {
 		}
 	}
 
-	public Instant getExpirationTime() {
+	public User getUserByToken(String token) throws UserNotFoundError, Unauthorized {
+		String email = validateToken(getTokenCore(token));
+		Optional<UserDetails> userDetails = userRepository.findByEmail(email);
+		if (userDetails.isEmpty()) {
+			throw new UserNotFoundError();
+		}
+
+		return (User) userDetails.get();
+	}
+
+	public String getTokenCore(String token) {
+		return token.replace("Bearer ", "");
+	}
+
+	private Instant getExpirationTime() {
 		return LocalDateTime
 				.now()
 				.plusDays(7)
