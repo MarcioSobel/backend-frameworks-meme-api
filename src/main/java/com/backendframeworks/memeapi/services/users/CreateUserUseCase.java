@@ -1,5 +1,7 @@
 package com.backendframeworks.memeapi.services.users;
 
+import java.util.Optional;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,8 +21,8 @@ public class CreateUserUseCase {
 	private UserRepository userRepository;
 
 	public User execute(CreateUserDto userDto) {
-		UserDetails userAlreadyExists = userRepository.findByEmail(userDto.email());
-		if (userAlreadyExists != null) {
+		Optional<UserDetails> userAlreadyExists = userRepository.findByEmail(userDto.email());
+		if (userAlreadyExists.isPresent()) {
 			throw new UserAlreadyExistsError();
 		}
 

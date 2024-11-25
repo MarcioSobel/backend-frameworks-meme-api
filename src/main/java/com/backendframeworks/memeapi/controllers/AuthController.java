@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.backendframeworks.memeapi.dtos.auth.LoginDto;
 import com.backendframeworks.memeapi.dtos.users.CreateUserDto;
+import com.backendframeworks.memeapi.exceptions.auth.InvalidCredentials;
 import com.backendframeworks.memeapi.models.User;
 import com.backendframeworks.memeapi.services.auth.TokenService;
 import com.backendframeworks.memeapi.services.users.CreateUserUseCase;
@@ -36,12 +37,28 @@ public class AuthController {
 
 	@PostMapping("/auth")
 	public ResponseEntity<String> login(@RequestBody @Valid LoginDto loginDto) {
+		log.info("Received login request");
 		UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(
 				loginDto.email(),
 				loginDto.password());
-		Authentication auth = authenticationManager.authenticate(credentials);
+		log.info("Created username password authentication token");
+		log.info("Credentials:", credentials.getPrincipal(), credentials.getCredentials());
 
+		log.info("Creating authentication...");
+
+		Authentication auth;
+		try {
+			auth = authenticationManager.authenticate(credentials);
+		} catch (Exception e) {
+			log.error("Invalid credentials, returning error");
+			throw new InvalidCredentials();
+		}
+
+		log.info("Authentication created:", auth);
+
+		log.info("Generating token...");
 		String token = tokenService.generateToken((User) auth.getPrincipal());
+		log.info("Token generated:", token);
 
 		return ResponseEntity.status(HttpStatus.OK).body(token);
 	}

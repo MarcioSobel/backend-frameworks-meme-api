@@ -2,6 +2,7 @@ package com.backendframeworks.memeapi.configuration;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.backendframeworks.memeapi.exceptions.Unauthorized;
+import com.backendframeworks.memeapi.exceptions.auth.InvalidCredentials;
 import com.backendframeworks.memeapi.repositories.UserRepository;
 import com.backendframeworks.memeapi.services.auth.TokenService;
 
@@ -35,7 +37,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
 			@NonNull FilterChain filterChain)
-			throws ServletException, IOException {
+			throws ServletException, IOException, InvalidCredentials {
 
 		String path = request.getRequestURI();
 		if (EXCLUDED_PATHS.contains(path) && request.getMethod().equals(HttpMethod.POST.name())) {
@@ -48,9 +50,12 @@ public class SecurityFilter extends OncePerRequestFilter {
 		if (token != null) {
 			try {
 				String email = tokenService.validateToken(token);
-				UserDetails user = userRepository.findByEmail(email);
+				Optional<UserDetails> user = userRepository.findByEmail(email);
+				if (user.isEmpty()) {
+					throw new InvalidCredentials();
+				}
 
-				var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+				var authentication = new UsernamePasswordAuthenticationToken(user, null, user.get().getAuthorities());
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			} catch (Unauthorized e) {
 				handleInvalidTokenException(response, e);

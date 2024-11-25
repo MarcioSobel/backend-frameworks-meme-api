@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.backendframeworks.memeapi.exceptions.auth.InvalidCredentials;
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -21,6 +23,11 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(NotFound.class)
 	public ResponseEntity<HttpError> handleNotFoundException(NotFound e) {
 		return generateResponseEntity(HttpStatus.NOT_FOUND, e);
+	}
+
+	@ExceptionHandler(InvalidCredentials.class)
+	public ResponseEntity<HttpError> handleInvalidCredentialsException(InvalidCredentials e) {
+		return generateResponseEntity(HttpStatus.BAD_REQUEST, e);
 	}
 
 	private ResponseEntity<HttpError> generateResponseEntity(HttpStatus status, RuntimeException exception) {
