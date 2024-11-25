@@ -8,14 +8,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backendframeworks.memeapi.dtos.pages.CreatePageDto;
+import com.backendframeworks.memeapi.dtos.pages.UpdatePageDto;
 import com.backendframeworks.memeapi.models.Page;
 import com.backendframeworks.memeapi.services.pages.CreatePageUseCase;
 import com.backendframeworks.memeapi.services.pages.RemovePageUseCase;
+import com.backendframeworks.memeapi.services.pages.UpdatePageUseCase;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,6 +33,9 @@ public class PageController {
 	@Autowired
 	private RemovePageUseCase removePageUseCase;
 
+	@Autowired
+	private UpdatePageUseCase updatePageUseCase;
+
 	@PostMapping
 	public ResponseEntity<Page> createPage(@RequestBody CreatePageDto dto) {
 		log.info("Creating page");
@@ -42,5 +48,12 @@ public class PageController {
 		log.info("Removing page");
 		removePageUseCase.execute(id);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<Page> updatePage(@PathVariable UUID id, @RequestBody UpdatePageDto dto) {
+		log.info("Updating page");
+		Page updatedPage = updatePageUseCase.execute(id, dto);
+		return ResponseEntity.status(HttpStatus.OK).body(updatedPage);
 	}
 }
