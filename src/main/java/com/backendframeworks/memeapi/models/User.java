@@ -46,7 +46,7 @@ public class User implements UserDetails {
 	@Column(nullable = false)
 	private UserRole role;
 
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<UserLikeMeme> likes;
 
 	@Override

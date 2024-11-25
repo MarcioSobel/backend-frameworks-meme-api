@@ -40,7 +40,7 @@ public class Meme {
 	@Column(nullable = true)
 	private Instant updatedAt;
 
-	@OneToMany(mappedBy = "meme", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "meme", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<UserLikeMeme> likes;
 
 	@ManyToOne
