@@ -19,9 +19,11 @@ import com.backendframeworks.memeapi.dtos.comments.CreateCommentDto;
 //import com.backendframeworks.memeapi.dtos.comments.UpdateCommentDto;
 import com.backendframeworks.memeapi.models.Comment;
 import com.backendframeworks.memeapi.services.comments.CommentMemeUseCase;
+import com.backendframeworks.memeapi.services.comments.ListCommentsByUserIdUserCase;
 import com.backendframeworks.memeapi.services.comments.ListCommentsUseCase;
 //import com.backendframeworks.memeapi.services.comments.RemoveCommentsUseCase;
 //import com.backendframeworks.memeapi.services.comments.UpdateCommentsUseCase;
+import com.backendframeworks.memeapi.services.pages.ListPagesFollowedByUserUseCase;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,6 +45,10 @@ public class CommentController {
     @Autowired
 	private ListCommentsUseCase listCommentsUseCase;
 
+	@Autowired
+	private ListCommentsByUserIdUserCase listCommentsByUserIdUserCase;
+
+
     @PostMapping
 	public ResponseEntity<Comment> createPage(@RequestBody CreateCommentDto dto) {
 		log.info("Creating Comment");
@@ -56,8 +62,14 @@ public class CommentController {
 		List<Comment> comments = listCommentsUseCase.execute();
 		return ResponseEntity.status(HttpStatus.OK).body(comments);
 	}
-}
 
+	@GetMapping("/followedBy/{userId}")
+	public ResponseEntity<List<Comment>> fetchCommentsByUserId(@PathVariable UUID userId) {
+		log.info("Listing comments by user");
+		List<Comment> comments = listCommentsByUserIdUserCase.execute(userId);
+		return ResponseEntity.status(HttpStatus.OK).body(comments);
+	}
+}
 
 
 /*
