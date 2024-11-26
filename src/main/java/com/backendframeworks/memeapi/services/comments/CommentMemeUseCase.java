@@ -11,10 +11,8 @@ import com.backendframeworks.memeapi.exceptions.users.UserNotFoundError;
 import com.backendframeworks.memeapi.models.Comment;
 import com.backendframeworks.memeapi.models.Meme;
 import com.backendframeworks.memeapi.models.User;
-import com.backendframeworks.memeapi.models.UserHasPage;
 import com.backendframeworks.memeapi.repositories.CommentsRepository;
 import com.backendframeworks.memeapi.repositories.MemeRepository;
-import com.backendframeworks.memeapi.repositories.UserHasPageRepository;
 import com.backendframeworks.memeapi.repositories.UserRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -62,18 +60,3 @@ public class CommentMemeUseCase {
 	}	 
 	}
 	
-
-	/*log.info("Creating page...");
-	Page page = new Page();
-	page.setName(dto.name());
-
-	Page savedPage = pageRepository.save(page);
-
-	UserHasPage userHasPage = new UserHasPage();
-	userHasPage.setUser(user.get());
-	userHasPage.setPage(page);
-
-	userHasPageRepository.save(userHasPage);
-
-	log.info("Page created, returning");
-	return savedPage; */

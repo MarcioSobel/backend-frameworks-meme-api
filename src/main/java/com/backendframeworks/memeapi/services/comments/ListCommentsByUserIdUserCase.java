@@ -2,7 +2,6 @@ package com.backendframeworks.memeapi.services.comments;
 import java.util.List;
 import java.util.UUID;
 
-import org.hibernate.annotations.Comments;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,32 +17,24 @@ import lombok.extern.slf4j.Slf4j;
 
 public class ListCommentsByUserIdUserCase {
 
-
-    @Autowired
+	
+	@Autowired
     private CommentsRepository commentsRepository;
-
+	
+	
+		@Autowired
+		private UserRepository userRepository;
 	public List<Comment> execute(UUID userId) throws UserNotFoundError {
-		Boolean userExists = UserRepository.existsById(userId);
+		Boolean userExists = userRepository.existsById(userId);
 		if (!userExists) {
 			throw new UserNotFoundError();
 		}
 
-		List<Comments> UserComments = CommentsRepository.findAllByUserId(userId);
+		List<Comment> UserComments = commentsRepository.findAllByUserId(userId);
 		
-	List<Comments> CommentsbyId = UserComments.stream().filter().toList();
-	return CommentsbyId;
+	
+	return UserComments;
 	
 	}
     
 }
-
-/* 
-
-
-
-	List<UserFollowPage> relations = userFollowPageRepository.findAllByUserId(userId);
-	List<Page> pages = relations.stream().map(r -> r.getPage()).toList();
-	return pages;
-}
-}
-*/
