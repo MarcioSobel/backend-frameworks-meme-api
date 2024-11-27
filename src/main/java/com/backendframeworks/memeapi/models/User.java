@@ -1,3 +1,4 @@
+// User.java
 package com.backendframeworks.memeapi.models;
 
 import java.util.Collection;
@@ -18,7 +19,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -46,8 +49,17 @@ public class User implements UserDetails {
 	@Column(nullable = false)
 	private UserRole role;
 
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private Set<UserLikeMeme> likes;
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "user_has_pages", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "page_id"))
+	private Set<Page> createdPages;
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "user_follows_pages", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "page_id"))
+	private Set<Page> followedPages;
+
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
+	@JoinTable(name = "user_likes_memes", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "meme_id"))
+	private Set<Meme> likedMemes;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -57,5 +69,11 @@ public class User implements UserDetails {
 	@Override
 	public String getUsername() {
 		return email;
+	}
+
+	@Override
+	public String toString() {
+		return "User{" + "id=" + id + ", email='" + email + '\'' + ", handle='" + handle + '\'' + ", name='" + name
+				+ '\'' + ", role=" + role + '}';
 	}
 }

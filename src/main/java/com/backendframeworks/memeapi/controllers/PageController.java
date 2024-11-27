@@ -23,6 +23,7 @@ import com.backendframeworks.memeapi.models.User;
 import com.backendframeworks.memeapi.services.auth.TokenService;
 import com.backendframeworks.memeapi.services.pages.CreatePageUseCase;
 import com.backendframeworks.memeapi.services.pages.FollowPageUseCase;
+import com.backendframeworks.memeapi.services.pages.GetPageByNameUseCase;
 import com.backendframeworks.memeapi.services.pages.ListAllPagesUseCase;
 import com.backendframeworks.memeapi.services.pages.ListPagesFollowedByUserUseCase;
 import com.backendframeworks.memeapi.services.pages.RemovePageUseCase;
@@ -60,6 +61,9 @@ public class PageController {
 	@Autowired
 	private UnfollowPageUseCase unfollowPageUseCase;
 
+	@Autowired
+	private GetPageByNameUseCase getPageByNameUseCase;
+
 	@PostMapping
 	public ResponseEntity<Page> createPage(@RequestBody CreatePageDto dto) {
 		log.info("Creating page");
@@ -86,6 +90,12 @@ public class PageController {
 		log.info("Listing pages");
 		List<Page> pages = listAllPagesUseCase.execute();
 		return ResponseEntity.status(HttpStatus.OK).body(pages);
+	}
+
+	@GetMapping("/{name}")
+	public ResponseEntity<Page> getPageByName(@PathVariable String name) {
+		Page page = getPageByNameUseCase.execute(name);
+		return ResponseEntity.status(HttpStatus.OK).body(page);
 	}
 
 	@GetMapping("/followedBy/{userId}")

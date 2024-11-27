@@ -3,6 +3,7 @@ package com.backendframeworks.memeapi.models;
 import java.time.Instant;
 import java.util.UUID;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,7 +38,7 @@ public class Comment {
 	@JoinColumn(name = "meme_id", nullable = false)
 	private Meme meme;
 
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
