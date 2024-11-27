@@ -15,10 +15,12 @@ import com.backendframeworks.memeapi.repositories.MemeRepository;
 import com.backendframeworks.memeapi.repositories.UserLikeMemeRepository;
 import com.backendframeworks.memeapi.repositories.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@Transactional
 public class UnlikeMemeUseCase {
 
 	@Autowired
@@ -49,7 +51,7 @@ public class UnlikeMemeUseCase {
 		log.info("Meme is valid");
 		log.info("Checking if user already liked meme");
 		Optional<UserLikeMeme> alreadyLiked = userLikeMemeRepository.findByUserIdAndMemeId(userId, memeId);
-		if (alreadyLiked.isPresent()) {
+		if (alreadyLiked.isEmpty()) {
 			log.info("User does not have a like record on this meme, no action needed");
 			return;
 		}
