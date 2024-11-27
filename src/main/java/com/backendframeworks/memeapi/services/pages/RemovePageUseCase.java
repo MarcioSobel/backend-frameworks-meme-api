@@ -8,8 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.backendframeworks.memeapi.exceptions.pages.PageNotFound;
 import com.backendframeworks.memeapi.repositories.PageRepository;
-import com.backendframeworks.memeapi.repositories.UserFollowPageRepository;
-import com.backendframeworks.memeapi.repositories.UserHasPageRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,12 +19,6 @@ public class RemovePageUseCase {
 	@Autowired
 	private PageRepository pageRepository;
 
-	@Autowired
-	private UserHasPageRepository userHasPageRepository;
-
-	@Autowired
-	private UserFollowPageRepository userFollowPageRepository;
-
 	public void execute(UUID id) throws PageNotFound {
 		log.info("Checking if page exists...");
 		Boolean pageExists = pageRepository.existsById(id);
@@ -35,11 +27,7 @@ public class RemovePageUseCase {
 			throw new PageNotFound();
 		}
 
-		log.info("Page exists, deleting relations...");
-		userHasPageRepository.deleteByPageId(id);
-		userFollowPageRepository.deleteByPageId(id);
-
-		log.info("Relations deleted, deleting page...");
+		log.info("Deleting page...");
 		pageRepository.deleteById(id);
 
 		log.info("Page deleted, returning");
