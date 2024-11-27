@@ -10,11 +10,11 @@ import com.backendframeworks.memeapi.repositories.MemeRepository;
 
 @Service
 public class GetAllMemesUseCase {
-    
-     @Autowired
-     private MemeRepository memeRepository;
 
-     public List<Meme> execute() {
+    @Autowired
+    private MemeRepository memeRepository;
+
+    public List<Meme> execute() {
         return memeRepository.findAll();
     }
 }

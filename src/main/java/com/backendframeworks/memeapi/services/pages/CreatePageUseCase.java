@@ -10,9 +10,7 @@ import com.backendframeworks.memeapi.exceptions.pages.PageAlreadyExists;
 import com.backendframeworks.memeapi.exceptions.users.UserNotFoundError;
 import com.backendframeworks.memeapi.models.Page;
 import com.backendframeworks.memeapi.models.User;
-import com.backendframeworks.memeapi.models.UserHasPage;
 import com.backendframeworks.memeapi.repositories.PageRepository;
-import com.backendframeworks.memeapi.repositories.UserHasPageRepository;
 import com.backendframeworks.memeapi.repositories.UserRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +24,6 @@ public class CreatePageUseCase {
 
 	@Autowired
 	private PageRepository pageRepository;
-
-	@Autowired
-	private UserHasPageRepository userHasPageRepository;
 
 	public Page execute(CreatePageDto dto) throws UserNotFoundError, PageAlreadyExists {
 		log.info("Checking if user exists...");
@@ -53,11 +48,9 @@ public class CreatePageUseCase {
 
 		Page savedPage = pageRepository.save(page);
 
-		UserHasPage userHasPage = new UserHasPage();
-		userHasPage.setUser(user.get());
-		userHasPage.setPage(page);
-
-		userHasPageRepository.save(userHasPage);
+		log.info("Associating page to user");
+		user.get().getCreatedPages().add(page);
+		userRepository.save(user.get());
 
 		log.info("Page created, returning");
 		return savedPage;
