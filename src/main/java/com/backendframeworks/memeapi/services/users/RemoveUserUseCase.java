@@ -1,15 +1,17 @@
 package com.backendframeworks.memeapi.services.users;
 
+import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.backendframeworks.memeapi.exceptions.users.UserNotFoundError;
 import com.backendframeworks.memeapi.exceptions.users.UserNotFoundException; // Nome corrigido
+import com.backendframeworks.memeapi.models.User;
 import com.backendframeworks.memeapi.repositories.UserRepository;
-import com.backendframeworks.memeapi.repositories.UserFollowPageRepository;
-import com.backendframeworks.memeapi.repositories.UserHasPageRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,19 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RemoveUserUseCase {
 
-    private final UserRepository userRepository;
-    private final UserHasPageRepository userHasPageRepository;
-    private final UserFollowPageRepository userFollowPageRepository;
-
-    public RemoveUserUseCase(
-        UserRepository userRepository,
-        UserHasPageRepository userHasPageRepository,
-        UserFollowPageRepository userFollowPageRepository
-    ) {
-        this.userRepository = userRepository;
-        this.userHasPageRepository = userHasPageRepository;
-        this.userFollowPageRepository = userFollowPageRepository;
-    }
+    @Autowired
+    private UserRepository userRepository;
 
     public void execute(UUID userId) {
         if (userId == null) {
@@ -40,8 +31,14 @@ public class RemoveUserUseCase {
 
         try {
             log.info("Deleting user relations for userId: {}", userId);
-            userHasPageRepository.deleteByUserId(userId);
-            userFollowPageRepository.deleteByUserId(userId);
+            Optional<User> user = userRepository.findById(userId);
+            if (user.isEmpty()) {
+                throw new UserNotFoundError();
+            }
+
+            user.get().getCreatedPages().clear();
+            user.get().getLikedMemes().clear();
+            user.get().getFollowedPages().clear();
 
             log.info("Deleting user with ID: {}", userId);
             userRepository.deleteById(userId);
