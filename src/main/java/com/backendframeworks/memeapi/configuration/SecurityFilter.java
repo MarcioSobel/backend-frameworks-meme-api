@@ -26,7 +26,9 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
 
-	private static final List<String> EXCLUDED_PATHS = List.of("/auth", "/register");
+	private static final List<String> EXCLUDED_PATHS = List.of("/auth", "/register", "/v3/api-docs",
+			"/swagger-ui",
+			"/swagger-ui.html");
 
 	@Autowired
 	private TokenService tokenService;

@@ -24,6 +24,8 @@ import com.backendframeworks.memeapi.services.comments.ListCommentsUseCase;
 import com.backendframeworks.memeapi.services.comments.RemoveCommentUseCase;
 import com.backendframeworks.memeapi.services.comments.UpdateCommentUseCase;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -31,56 +33,64 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/comments")
 
 public class CommentController {
-    
-    @Autowired
+
+	@Autowired
 	private CommentMemeUseCase commentMemeUseCase;
 
-    @Autowired
+	@Autowired
 	private RemoveCommentUseCase removeCommentUseCase;
 
-    @Autowired
+	@Autowired
 	private UpdateCommentUseCase updateCommentUseCase;
 
-    @Autowired
+	@Autowired
 	private ListCommentsUseCase listCommentsUseCase;
 
 	@Autowired
 	private ListCommentsByUserIdUserCase listCommentsByUserIdUserCase;
 
-
-    @PostMapping
+	@PostMapping
+	@Operation(summary = "comment on a meme", method = "POST")
+	@ApiResponse(responseCode = "201", description = "comment created successfully")
 	public ResponseEntity<Comment> createPage(@RequestBody CreateCommentDto dto) {
 		log.info("Creating Comment");
 		Comment comment = commentMemeUseCase.execute(dto);
 		return ResponseEntity.status(HttpStatus.CREATED).body(comment);
 	}
 
-    @GetMapping
+	@GetMapping
+	@ApiResponse(responseCode = "200")
+	@Operation(summary = "list all comments", method = "GET")
 	public ResponseEntity<List<Comment>> fetchComments() {
 		log.info("Listing comments");
 		List<Comment> comments = listCommentsUseCase.execute();
 		return ResponseEntity.status(HttpStatus.OK).body(comments);
 	}
 
-	@GetMapping("/followedBy/{userId}")
+	@GetMapping("/{userId}")
+	@ApiResponse(responseCode = "200")
+	@Operation(summary = "list all comments by userId", method = "GET")
 	public ResponseEntity<List<Comment>> fetchCommentsByUserId(@PathVariable UUID userId) {
 		log.info("Listing comments by user");
 		List<Comment> comments = listCommentsByUserIdUserCase.execute(userId);
 		return ResponseEntity.status(HttpStatus.OK).body(comments);
 	}
 
-	@DeleteMapping("/fallowdBy/{userId}")
-	public ResponseEntity<List<Comment>> removeComment(@PathVariable UUID userId) {
+	@DeleteMapping("/{userId}")
+	@ApiResponse(responseCode = "204")
+	@Operation(summary = "delete a comment", method = "DELETE")
+	public ResponseEntity<Object> removeComment(@PathVariable UUID userId) {
 		log.info("Removing comment");
 		removeCommentUseCase.execute(userId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
-	@PutMapping("/fallowdBy/{userId}")
+	@PutMapping("/{userId}")
+	@ApiResponse(responseCode = "200")
+	@Operation(summary = "update a comment", method = "PUT")
 	public ResponseEntity<Comment> updateComment(@PathVariable UUID id, @RequestBody UpdateCommentDto dto) {
 		log.info("Updating page");
 		Comment updatedComment = updateCommentUseCase.execute(id, dto);
 		return ResponseEntity.status(HttpStatus.OK).body(updatedComment);
 	}
 }
-

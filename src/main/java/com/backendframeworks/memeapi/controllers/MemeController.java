@@ -21,14 +21,16 @@ import com.backendframeworks.memeapi.dtos.memes.UpdateMemeDto;
 import com.backendframeworks.memeapi.models.Meme;
 import com.backendframeworks.memeapi.models.User;
 import com.backendframeworks.memeapi.services.memes.DeleteMemeUseCase;
+import com.backendframeworks.memeapi.services.memes.DislikeMemeUseCase;
 import com.backendframeworks.memeapi.services.auth.TokenService;
 import com.backendframeworks.memeapi.services.memes.CreateMemeUseCase;
 import com.backendframeworks.memeapi.services.memes.GetAllMemesUseCase;
 import com.backendframeworks.memeapi.services.memes.GetMemeByIdUseCase;
 import com.backendframeworks.memeapi.services.memes.LikeMemeUseCase;
-import com.backendframeworks.memeapi.services.memes.UnlikeMemeUseCase;
 import com.backendframeworks.memeapi.services.memes.UpdateMemeUseCase;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -43,7 +45,7 @@ public class MemeController {
     private LikeMemeUseCase likeMemeUseCase;
 
     @Autowired
-    private UnlikeMemeUseCase unlikeMemeUseCase;
+    private DislikeMemeUseCase dislikeMemeUseCase;
 
     @Autowired
     private GetAllMemesUseCase getAllMemesUseCase;
@@ -61,12 +63,16 @@ public class MemeController {
     private DeleteMemeUseCase deleteMemeUseCase;
 
     @PostMapping("/likes/{memeId}/{userId}")
+    @ApiResponse(responseCode = "204")
+    @Operation(summary = "like a meme", method = "POST")
     public ResponseEntity<Object> likeMemeByUserId(@PathVariable UUID memeId, @PathVariable UUID userId) {
         likeMemeUseCase.execute(memeId, userId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PostMapping("/likes/{memeId}")
+    @ApiResponse(responseCode = "204")
+    @Operation(summary = "like a meme", method = "POST")
     public ResponseEntity<Object> likeMemeByToken(@RequestHeader("Authorization") String token,
             @PathVariable UUID memeId) {
         User user = tokenService.getUserByToken(token);
@@ -75,21 +81,27 @@ public class MemeController {
     }
 
     @DeleteMapping("/likes/{memeId}/{userId}")
-    public ResponseEntity<Object> unlikeMemeByUserId(@PathVariable UUID memeId, @PathVariable UUID userId) {
-        unlikeMemeUseCase.execute(memeId, userId);
+    @ApiResponse(responseCode = "204")
+    @Operation(summary = "dislike a meme", method = "Delete")
+    public ResponseEntity<Object> dislikeMemeByUserId(@PathVariable UUID memeId, @PathVariable UUID userId) {
+        dislikeMemeUseCase.execute(memeId, userId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping("/likes/{memeId}")
-    public ResponseEntity<Object> unlikeMemeByToken(@RequestHeader("Authorization") String token,
+    @ApiResponse(responseCode = "204")
+    @Operation(summary = "dislike a meme", method = "DELETE")
+    public ResponseEntity<Object> dislikeMemeByToken(@RequestHeader("Authorization") String token,
             @PathVariable UUID memeId) {
         User user = tokenService.getUserByToken(token);
 
-        unlikeMemeUseCase.execute(memeId, user.getId());
+        dislikeMemeUseCase.execute(memeId, user.getId());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping
+    @ApiResponse(responseCode = "200")
+    @Operation(summary = "list all memes", method = "GET")
     public ResponseEntity<List<Meme>> getAllMemes() {
         log.info("Fetching all memes");
         List<Meme> memes = getAllMemesUseCase.execute();
@@ -97,6 +109,8 @@ public class MemeController {
     }
 
     @GetMapping("/{id}")
+    @ApiResponse(responseCode = "200")
+    @Operation(summary = "get meme by id", method = "GET")
     public ResponseEntity<Meme> getMemeById(@PathVariable UUID id) {
         log.info("Fetching meme with id: {}", id);
         Meme meme = getMemeByIdUseCase.execute(id);
@@ -107,6 +121,8 @@ public class MemeController {
     }
 
     @PostMapping
+    @ApiResponse(responseCode = "200")
+    @Operation(summary = "create a meme", method = "POST")
     public ResponseEntity<Meme> createMeme(@RequestBody CreateMemeDto meme) {
         log.info("Creating meme");
         Meme createdMeme = createMemeUseCase.execute(meme);
@@ -114,6 +130,8 @@ public class MemeController {
     }
 
     @PutMapping("/{id}")
+    @ApiResponse(responseCode = "200")
+    @Operation(summary = "update a meme", method = "PUT")
     public ResponseEntity<Meme> updateMeme(@PathVariable UUID id, @RequestBody UpdateMemeDto dto) {
         log.info("Updating meme with id: {}", id);
         Meme updatedMeme = updateMemeUseCase.execute(id, dto);
@@ -124,6 +142,8 @@ public class MemeController {
     }
 
     @DeleteMapping("/{id}")
+    @ApiResponse(responseCode = "200")
+    @Operation(summary = "delete a meme", method = "DELETE")
     public ResponseEntity<Void> deleteMeme(@PathVariable UUID id) {
         log.info("Deleting meme with id: {}", id);
         deleteMemeUseCase.execute(id);

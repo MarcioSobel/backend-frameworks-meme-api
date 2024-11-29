@@ -18,6 +18,8 @@ import com.backendframeworks.memeapi.models.User;
 import com.backendframeworks.memeapi.services.auth.TokenService;
 import com.backendframeworks.memeapi.services.users.CreateUserUseCase;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,6 +38,8 @@ public class AuthController {
 	private TokenService tokenService;
 
 	@PostMapping("/auth")
+	@Operation(summary = "authenticate", method = "POST")
+	@ApiResponse(responseCode = "200", description = "authenticated successfully")
 	public ResponseEntity<String> login(@RequestBody @Valid LoginDto loginDto) {
 		log.info("Received login request");
 		UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(
@@ -64,6 +68,8 @@ public class AuthController {
 	}
 
 	@PostMapping("/register")
+	@Operation(summary = "create an account in the database", method = "POST")
+	@ApiResponse(responseCode = "201", description = "registered successfully")
 	public ResponseEntity<Object> register(@RequestBody @Valid CreateUserDto userDto) {
 		log.info("Calling create user use case...");
 		User user = createUserUseCase.execute(userDto);

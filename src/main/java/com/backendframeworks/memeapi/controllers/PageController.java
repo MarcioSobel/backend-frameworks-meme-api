@@ -30,6 +30,8 @@ import com.backendframeworks.memeapi.services.pages.RemovePageUseCase;
 import com.backendframeworks.memeapi.services.pages.UnfollowPageUseCase;
 import com.backendframeworks.memeapi.services.pages.UpdatePageUseCase;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -65,6 +67,8 @@ public class PageController {
 	private GetPageByNameUseCase getPageByNameUseCase;
 
 	@PostMapping
+	@ApiResponse(responseCode = "201")
+	@Operation(summary = "create a page", method = "POST")
 	public ResponseEntity<Page> createPage(@RequestBody CreatePageDto dto) {
 		log.info("Creating page");
 		Page page = createPageUseCase.execute(dto);
@@ -72,6 +76,8 @@ public class PageController {
 	}
 
 	@DeleteMapping("/{id}")
+	@ApiResponse(responseCode = "204")
+	@Operation(summary = "delete a page", method = "DELETE")
 	public ResponseEntity<Object> removePage(@PathVariable UUID id) {
 		log.info("Removing page");
 		removePageUseCase.execute(id);
@@ -79,6 +85,8 @@ public class PageController {
 	}
 
 	@PutMapping("/{id}")
+	@ApiResponse(responseCode = "200")
+	@Operation(summary = "update a page", method = "PUT")
 	public ResponseEntity<Page> updatePage(@PathVariable UUID id, @RequestBody UpdatePageDto dto) {
 		log.info("Updating page");
 		Page updatedPage = updatePageUseCase.execute(id, dto);
@@ -86,6 +94,8 @@ public class PageController {
 	}
 
 	@GetMapping
+	@ApiResponse(responseCode = "200")
+	@Operation(summary = "list all page", method = "GET")
 	public ResponseEntity<List<Page>> fetchPages() {
 		log.info("Listing pages");
 		List<Page> pages = listAllPagesUseCase.execute();
@@ -93,12 +103,16 @@ public class PageController {
 	}
 
 	@GetMapping("/{name}")
+	@ApiResponse(responseCode = "200")
+	@Operation(summary = "get a page by name", method = "GET")
 	public ResponseEntity<Page> getPageByName(@PathVariable String name) {
 		Page page = getPageByNameUseCase.execute(name);
 		return ResponseEntity.status(HttpStatus.OK).body(page);
 	}
 
 	@GetMapping("/followedBy/{userId}")
+	@ApiResponse(responseCode = "200")
+	@Operation(summary = "list all pages followed by user id", method = "GET")
 	public ResponseEntity<List<Page>> fetchPagesFollowedByUserId(@PathVariable UUID userId) {
 		log.info("Listing pages followed by user");
 		List<Page> pages = listPagesFollowedByUserUseCase.execute(userId);
@@ -106,6 +120,8 @@ public class PageController {
 	}
 
 	@GetMapping("/followedBy")
+	@ApiResponse(responseCode = "200")
+	@Operation(summary = "list all pages followed by authenticated user", method = "GET")
 	public ResponseEntity<List<Page>> fetchPagesFollowedByToken(@RequestHeader("Authorization") String token) {
 		log.info("Listing pages followed by authenticated user");
 		User user = tokenService.getUserByToken(token);
@@ -115,6 +131,8 @@ public class PageController {
 	}
 
 	@PostMapping("/follow/{pageId}/{userId}")
+	@ApiResponse(responseCode = "204")
+	@Operation(summary = "make user id follow page id", method = "POST")
 	public ResponseEntity<Object> followPageByUserId(@PathVariable UUID userId, @PathVariable UUID pageId) {
 		log.info("Following page");
 		followPageUseCase.execute(userId, pageId);
@@ -122,6 +140,8 @@ public class PageController {
 	}
 
 	@PostMapping("/follow/{pageId}")
+	@ApiResponse(responseCode = "204")
+	@Operation(summary = "make authenticated user follow page id", method = "POST")
 	public ResponseEntity<Object> followPageByToken(@RequestHeader("Authorization") String token,
 			@PathVariable UUID pageId) {
 		log.info("Following page by token");
@@ -132,6 +152,8 @@ public class PageController {
 	}
 
 	@DeleteMapping("/unfollow/{pageId}")
+	@ApiResponse(responseCode = "204")
+	@Operation(summary = "make authenticated user unfollow page id", method = "DELETE")
 	public ResponseEntity<Object> unfollowPageByToken(@RequestHeader("Authorization") String token,
 			@PathVariable UUID pageId) {
 		log.info("Unfollowing page by token");
@@ -142,7 +164,9 @@ public class PageController {
 	}
 
 	@DeleteMapping("/unfollow/{pageId}/{userId}")
-	public ResponseEntity<Object> unfollowPageByToken(@PathVariable UUID userId,
+	@ApiResponse(responseCode = "204")
+	@Operation(summary = "make user id unfollow page id", method = "DELETE")
+	public ResponseEntity<Object> unfollowPageByUserId(@PathVariable UUID userId,
 			@PathVariable UUID pageId) {
 		log.info("Unfollowing page");
 

@@ -21,6 +21,8 @@ import com.backendframeworks.memeapi.repositories.UserRepository;
 import com.backendframeworks.memeapi.services.users.RemoveUserUseCase;
 import com.backendframeworks.memeapi.services.users.UpdateUserUseCase;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -44,6 +46,8 @@ public class UserController {
 	}
 
 	@PutMapping("/{id}")
+	@ApiResponse(responseCode = "200")
+	@Operation(summary = "update an user", method = "POST")
 	public ResponseEntity<User> updateUser(@PathVariable UUID id, @RequestBody UpdateUserDto dto) {
 		try {
 			User updatedUser = updateUserUseCase.execute(id, dto);
@@ -56,6 +60,8 @@ public class UserController {
 	}
 
 	@DeleteMapping("/{userId}")
+	@ApiResponse(responseCode = "204")
+	@Operation(summary = "delete an user", method = "POST")
 	public ResponseEntity<Void> deleteUser(@PathVariable UUID userId) {
 		log.info("Requst received to delete user with ID: {}", userId);
 		try {
